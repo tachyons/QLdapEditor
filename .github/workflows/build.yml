@@ -130,8 +130,6 @@ jobs:
             --icon-file editor/install/LdapEditorApp.png \
             --output appimage
 
-      - name: Rename AppImage
-        run: mv LdapEditorApp*.AppImage LdapEditorApp-linux-x86_64.AppImage
 
       - name: Build DEB package
         run: |
