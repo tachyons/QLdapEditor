@@ -11,20 +11,20 @@ LDAP Editor based on Qt6 and the ldapc++ wrapper.
 **Homebrew (recommended)**
 
 ```sh
-brew tap Shcherbich/QLdapEditor https://github.com/Shcherbich/QLdapEditor
+brew tap tachyons/QLdapEditor https://github.com/tachyons/QLdapEditor
 brew install --cask ldapeditorapp
 ```
 
 **Direct download**
 
-Download `LdapEditorApp-macos.dmg` from the [latest release](https://github.com/Shcherbich/QLdapEditor/releases/latest), open it, and drag `LdapEditorApp.app` to your Applications folder.
+Download `LdapEditorApp-macos.dmg` from the [latest release](https://github.com/tachyons/QLdapEditor/releases/latest), open it, and drag `LdapEditorApp.app` to your Applications folder.
 
 ### Linux
 
 **AppImage**
 
 ```sh
-wget https://github.com/Shcherbich/QLdapEditor/releases/latest/download/LdapEditorApp-linux-x86_64.AppImage
+wget https://github.com/tachyons/QLdapEditor/releases/latest/download/LdapEditorApp-linux-x86_64.AppImage
 chmod +x LdapEditorApp-linux-x86_64.AppImage
 ./LdapEditorApp-linux-x86_64.AppImage
 ```
@@ -32,13 +32,13 @@ chmod +x LdapEditorApp-linux-x86_64.AppImage
 **DEB package (Debian/Ubuntu)**
 
 ```sh
-wget https://github.com/Shcherbich/QLdapEditor/releases/latest/download/ldapeditor-<version>.x86_64.deb
+wget https://github.com/tachyons/QLdapEditor/releases/latest/download/ldapeditor-<version>.x86_64.deb
 sudo apt install ./ldapeditor-<version>.x86_64.deb
 ```
 
 ### Windows
 
-Download `LdapEditorApp-windows-x64.zip` from the [latest release](https://github.com/Shcherbich/QLdapEditor/releases/latest), extract it, and run `LdapEditorApp.exe`.
+Download `LdapEditorApp-windows-x64.zip` from the [latest release](https://github.com/tachyons/QLdapEditor/releases/latest), extract it, and run `LdapEditorApp.exe`.
 
 ---
 
