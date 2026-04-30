@@ -1,38 +1,62 @@
 # ── Build directories ─────────────────────────────────────────────────────────
 build/
 build-*/
+*build-*/
 out/
 cmake-build-*/
 
 # ── CMake ─────────────────────────────────────────────────────────────────────
 CMakeCache.txt
 CMakeFiles/
-CMakeLists.txt.user
+CMakeLists.txt.user*
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
+compile_commands.json
 _deps/
 
-# ── Generated files ───────────────────────────────────────────────────────────
-*.icns
-*.iconset/
+# ── C++ objects and libs ──────────────────────────────────────────────────────
+*.slo
+*.lo
+*.o
+*.obj
+*.a
+*.la
+*.lai
+*.lib
+*.so
+*.so.*
+*.dll
+*.dylib
+
+# ── Compiled executables ──────────────────────────────────────────────────────
+*.exe
+*.app/
+
+# ── Qt generated files ────────────────────────────────────────────────────────
+*.moc
 moc_*.cpp
 moc_*.h
 qrc_*.cpp
 ui_*.h
+*.qmlc
+*.jsc
+*.qm
+*.prl
+*.qmlls.ini
+*_plugin_import.cpp
+*_qmlcache.qrc
+object_script.*.Release
+object_script.*.Debug
+/.qmake.cache
+/.qmake.stash
+Makefile*
 *.autogen/
+*.icns
+*.iconset/
 
-# ── Compiled binaries ─────────────────────────────────────────────────────────
-*.o
-*.obj
-*.a
-*.lib
-*.so
-*.so.*
-*.dylib
-*.dll
-*.exe
-*.app/
+# ── Qt unit tests ─────────────────────────────────────────────────────────────
+target_wrapper.*
 
 # ── CPack / packaging output ──────────────────────────────────────────────────
 *.deb
@@ -51,9 +75,12 @@ CPackSourceConfig.cmake
 *.pro.user.*
 *.qbs.user
 *.qbs.user.*
-*.creator.user
+*.qmlproject.user
+*.qmlproject.user.*
+*creator.user*
+*.autosave
 
-# ── CLion / JetBrains ────────────────────────────────────────────────────────
+# ── CLion / JetBrains ─────────────────────────────────────────────────────────
 .idea/
 *.iml
 
@@ -100,3 +127,4 @@ latex/
 *.bak
 *.swp
 *.swo
+*.d

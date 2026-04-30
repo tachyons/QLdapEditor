@@ -1,4 +1,4 @@
 set(__QT_DEPLOY_TARGET_LdapEditorCore_FILE /Users/tachyons/code/QLdapEditor/corelib/libLdapEditorCore.dylib)
 set(__QT_DEPLOY_TARGET_LdapEditorCore_TYPE SHARED_LIBRARY)
-set(__QT_DEPLOY_TARGET_LdapEditorApp_FILE /Users/tachyons/code/QLdapEditor/editor/LdapEditorApp)
+set(__QT_DEPLOY_TARGET_LdapEditorApp_FILE /Users/tachyons/code/QLdapEditor/editor/LdapEditorApp.app/Contents/MacOS/LdapEditorApp)
 set(__QT_DEPLOY_TARGET_LdapEditorApp_TYPE EXECUTABLE)

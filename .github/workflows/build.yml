@@ -42,11 +42,7 @@ jobs:
         run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$(brew --prefix qt)" \
-            -DLDAP_LIBRARY="$(brew --prefix openldap)/lib/libldap.dylib" \
-            -DLBER_LIBRARY="$(brew --prefix openldap)/lib/liblber.dylib" \
-            -DSSL_LIBRARY="$(brew --prefix openssl)/lib/libssl.dylib" \
-            -DCRYPTO_LIBRARY="$(brew --prefix openssl)/lib/libcrypto.dylib"
+            -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"
 
       - name: Build
         run: cmake --build build --config Release --parallel
@@ -82,7 +78,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libldap-dev libssl-dev \
+            libldap-dev libssl-dev libsasl2-dev \
             libgl1-mesa-dev libglu1-mesa-dev \
             libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
             libxcb-render-util0 libxcb-xinerama0 libxkbcommon-x11-0 \
@@ -176,19 +172,8 @@ jobs:
       - name: Set up MSVC
         uses: microsoft/setup-msbuild@v2
 
-      - name: Install OpenLDAP via MSYS2
-        shell: bash
-        run: |
-          pacman -S --noconfirm \
-            mingw-w64-x86_64-openldap \
-            mingw-w64-x86_64-openssl \
-            2>/dev/null || true
-          # Copy headers and libs to a known location for MSVC
-          mkdir -p deps/include deps/lib
-          cp -r /mingw64/include/ldap*  deps/include/ 2>/dev/null || true
-          cp -r /mingw64/include/lber*  deps/include/ 2>/dev/null || true
-          cp    /mingw64/lib/libldap.a  deps/lib/ 2>/dev/null || true
-          cp    /mingw64/lib/liblber.a  deps/lib/ 2>/dev/null || true
+      - name: Install OpenLDAP and OpenSSL via vcpkg
+        run: vcpkg install openldap:x64-windows openssl:x64-windows
 
       - name: Generate ICO icon
         shell: pwsh
@@ -218,9 +203,8 @@ jobs:
         run: |
           cmake -B build `
             -G "Visual Studio 17 2022" -A x64 `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DLDAP_LIBRARY="${{ github.workspace }}/deps/lib/libldap.a" `
-            -DLBER_LIBRARY="${{ github.workspace }}/deps/lib/liblber.a"
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows
 
       - name: Build
         run: cmake --build build --config Release --parallel
