@@ -13,11 +13,20 @@ LDAP Editor based on Qt6 and the ldapc++ wrapper.
 ```sh
 brew tap tachyons/QLdapEditor https://github.com/tachyons/QLdapEditor
 brew install --cask ldapeditorapp
+xattr -cr /Applications/LdapEditorApp.app
 ```
+
+> The app is not notarized. The `xattr` command removes the quarantine flag that macOS sets on downloaded apps, allowing it to launch without a Gatekeeper warning.
 
 **Direct download**
 
-Download `LdapEditorApp-macos.dmg` from the [latest release](https://github.com/tachyons/QLdapEditor/releases/latest), open it, and drag `LdapEditorApp.app` to your Applications folder.
+Download `LdapEditorApp-macos.dmg` from the [latest release](https://github.com/tachyons/QLdapEditor/releases/latest), open it, and drag `LdapEditorApp.app` to your Applications folder. Then remove the quarantine attribute before launching:
+
+```sh
+xattr -cr /Applications/LdapEditorApp.app
+```
+
+Alternatively, open it once via right-click → **Open** and confirm in the dialog.
 
 ### Linux
 
