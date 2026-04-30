@@ -117,7 +117,7 @@ jobs:
         env:
           QMAKE: ${{ env.Qt6_DIR }}/bin/qmake
           OUTPUT: LdapEditorApp-linux-x86_64.AppImage
-          LD_LIBRARY_PATH: ${{ github.workspace }}/appdir/usr/lib
+          LD_LIBRARY_PATH: ${{ github.workspace }}/appdir/usr/lib:${{ env.QTDIR }}/lib
         run: |
           cp editor/install/LdapEditorApp.png appdir/usr/share/icons/hicolor/32x32/apps/
           ./linuxdeploy \

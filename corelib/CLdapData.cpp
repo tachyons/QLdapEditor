@@ -8,7 +8,9 @@
 #include <QString>
 #include <QDebug>
 #include <stdio.h>
+#ifndef _WIN32
 #include <syslog.h>
+#endif
 
 namespace ldapcore
 {
@@ -34,23 +36,33 @@ void CLdapData::syslogMessageHandler(QtMsgType type, const QMessageLogContext& c
     {
     case QtDebugMsg:
         fprintf(stdout, "debug: %s\n", localMsg.constData());
+#ifndef _WIN32
         syslog(LOG_DEBUG, "debug: %s", localMsg.constData());
+#endif
         break;
     case QtInfoMsg:
         fprintf(stdout, "info: %s\n", localMsg.constData());
+#ifndef _WIN32
         syslog(LOG_INFO, "info: %s", localMsg.constData());
+#endif
         break;
     case QtWarningMsg:
         fprintf(stdout, "warning: %s\n", localMsg.constData());
+#ifndef _WIN32
         syslog(LOG_WARNING, "warning: %s", localMsg.constData());
+#endif
         break;
     case QtCriticalMsg:
         fprintf(stderr, "critical: %s\n", localMsg.constData());
+#ifndef _WIN32
         syslog(LOG_CRIT, "critical: %s", localMsg.constData());
+#endif
         break;
     case QtFatalMsg:
         fprintf(stderr, "alert: %s\n", localMsg.constData());
+#ifndef _WIN32
         syslog(LOG_ALERT, "alert: %s", localMsg.constData());
+#endif
     }
 }
 
