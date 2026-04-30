@@ -1,12 +1,10 @@
 [Desktop Entry]
-Encoding=UTF-8
-Name=Ldap Editor utility
-Comment=Ldap Editor utility
+Name=LDAP Editor
+Comment=View and edit LDAP directories
 Exec=LdapEditorApp
 Icon=LdapEditorApp
-Categories=Utilities;Qt;LdapEditor;
+Categories=Utility;X-Qt;X-LdapEditor;
 Terminal=false
 Type=Application
 MimeType=application/x-ldapeditor-item;
-GenericName=Ldap Editor utility
-
+GenericName=LDAP Editor

@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: write
+
 env:
   QT_VERSION: "6.9.0"
 
