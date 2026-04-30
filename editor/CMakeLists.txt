@@ -93,17 +93,6 @@ if(APPLE)
     )
     list(APPEND ldapeditor_SOURCES "${ICON_ICNS}")
 
-# ── Windows: configure version resource and icon ─────────────────────────────
-
-elseif(WIN32)
-    set(ICON_ICO "${CMAKE_CURRENT_SOURCE_DIR}/install/LdapEditorApp.ico")
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/install/LdapEditorApp.rc.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.rc"
-        @ONLY
-    )
-    list(APPEND ldapeditor_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.rc")
-
 # ── Linux: include XDG desktop files as project sources (IDE visibility) ─────
 
 else()
@@ -117,7 +106,6 @@ endif()
 # ── Executable ───────────────────────────────────────────────────────────────
 
 ADD_EXECUTABLE(${PROJECT_NAME}
-    WIN32
     MACOSX_BUNDLE
     ${ldapeditor_SOURCES}
     ${ldapeditor_HEADERS}
@@ -177,38 +165,6 @@ if(APPLE)
     install(TARGETS ${PROJECT_NAME}
         BUNDLE  DESTINATION .
         RUNTIME DESTINATION bin
-    )
-
-# ── Windows: GUI executable properties and deployment ────────────────────────
-
-elseif(WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        WIN32_EXECUTABLE TRUE
-    )
-
-    find_program(WINDEPLOYQT_EXEC NAMES windeployqt6 windeployqt
-        HINTS "${Qt6_DIR}/../../../bin"
-    )
-    if(WINDEPLOYQT_EXEC)
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND "${WINDEPLOYQT_EXEC}"
-                --release
-                "$<TARGET_FILE:${PROJECT_NAME}>"
-            COMMENT "Running windeployqt"
-        )
-    else()
-        message(WARNING "windeployqt not found — Qt DLLs will not be deployed")
-    endif()
-
-    install(TARGETS ${PROJECT_NAME}
-        RUNTIME DESTINATION bin
-    )
-    # Install all DLLs that windeployqt placed next to the executable
-    install(DIRECTORY "$<TARGET_FILE_DIR:${PROJECT_NAME}>/"
-        DESTINATION bin
-        FILES_MATCHING
-            PATTERN "*.dll"
-            PATTERN "*.pdb" EXCLUDE
     )
 
 # ── Linux: install and XDG desktop integration ───────────────────────────────

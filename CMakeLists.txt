@@ -60,27 +60,6 @@ if(APPLE)
     SET(CPACK_PACKAGE_FILE_NAME   "${PACKAGENAME}-${VERSION}-macos-${CMAKE_SYSTEM_PROCESSOR}")
     SET(CPACK_PACKAGE_ICON        "${CMAKE_CURRENT_SOURCE_DIR}/editor/images/LdapEditorApp.png")
 
-# ── CPack — Windows (NSIS installer) ─────────────────────────────────────────
-elseif(WIN32)
-    SET(CPACK_GENERATOR           "NSIS")
-    SET(CPACK_PACKAGE_FILE_NAME   "${PACKAGENAME}-${VERSION}-windows-x64")
-    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${PRODUCT}")
-    SET(CPACK_NSIS_PACKAGE_NAME   "${PRODUCT}")
-    SET(CPACK_NSIS_DISPLAY_NAME   "${PRODUCT}")
-    SET(CPACK_NSIS_CONTACT        "${CPACK_PACKAGE_CONTACT}")
-    SET(CPACK_NSIS_HELP_LINK      "https://github.com/tachyons/QLdapEditor")
-    SET(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/tachyons/QLdapEditor")
-    SET(CPACK_NSIS_MODIFY_PATH    ON)
-    SET(CPACK_NSIS_EXECUTABLES_DIRECTORY "bin")
-    SET(CPACK_NSIS_MUI_ICON       "${CMAKE_CURRENT_SOURCE_DIR}/editor/install/LdapEditorApp.ico")
-    SET(CPACK_NSIS_MUI_UNIICON    "${CMAKE_CURRENT_SOURCE_DIR}/editor/install/LdapEditorApp.ico")
-    SET(CPACK_NSIS_CREATE_ICONS_EXTRA
-        "CreateShortcut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${PRODUCT}.lnk' '$INSTDIR\\\\bin\\\\LdapEditorApp.exe'"
-    )
-    SET(CPACK_NSIS_DELETE_ICONS_EXTRA
-        "Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\${PRODUCT}.lnk'"
-    )
-
 # ── CPack — Linux (DEB + RPM) ─────────────────────────────────────────────────
 else()
     SET(CPACK_GENERATOR           "DEB;RPM")

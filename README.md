@@ -36,10 +36,6 @@ wget https://github.com/tachyons/QLdapEditor/releases/latest/download/ldapeditor
 sudo apt install ./ldapeditor-<version>.x86_64.deb
 ```
 
-### Windows
-
-Download `LdapEditorApp-windows-x64.zip` from the [latest release](https://github.com/tachyons/QLdapEditor/releases/latest), extract it, and run `LdapEditorApp.exe`.
-
 ---
 
 ## Building from source
@@ -66,17 +62,6 @@ sudo apt install libldap-dev libssl-dev libsasl2-dev \
   libgl1-mesa-dev libxcb-cursor0 libxkbcommon-x11-0
 # Install Qt6 via https://github.com/jurplel/install-qt-action or your distro packages
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel
-```
-
-### Windows (MSYS2 / MinGW-w64)
-
-```sh
-pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja \
-          mingw-w64-x86_64-qt6-base mingw-w64-x86_64-qt6-tools \
-          mingw-w64-x86_64-qt6-5compat mingw-w64-x86_64-openldap \
-          mingw-w64-x86_64-openssl
-cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/mingw64
 cmake --build build --parallel
 ```
 
@@ -115,7 +100,6 @@ cmake --build build --parallel
 ### Packaging
 - macOS `.app` bundle and DMG
 - Linux AppImage and DEB package
-- Windows ZIP archive
 - XDG desktop integration (Linux)
 
 ---

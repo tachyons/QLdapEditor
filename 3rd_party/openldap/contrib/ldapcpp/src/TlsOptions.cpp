@@ -14,6 +14,15 @@
 #include "TlsOptions.h"
 #include "LDAPException.h"
 
+/* LDAP_OPT_X_TLS_RANDOM_FILE and LDAP_OPT_X_TLS_DHFILE were removed in
+ * OpenLDAP 2.6. Provide stubs so this code compiles against newer releases. */
+#ifndef LDAP_OPT_X_TLS_RANDOM_FILE
+#define LDAP_OPT_X_TLS_RANDOM_FILE 0
+#endif
+#ifndef LDAP_OPT_X_TLS_DHFILE
+#define LDAP_OPT_X_TLS_DHFILE 0
+#endif
+
 enum opttype {
     INT=0,
     STRING,

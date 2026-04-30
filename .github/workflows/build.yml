@@ -115,9 +115,9 @@ jobs:
 
       - name: Build AppImage
         env:
-          QMAKE: ${{ env.Qt6_DIR }}/bin/qmake
+          QMAKE: ${{ env.QT_ROOT_DIR }}/bin/qmake
           OUTPUT: LdapEditorApp-linux-x86_64.AppImage
-          LD_LIBRARY_PATH: ${{ github.workspace }}/appdir/usr/lib:${{ env.QTDIR }}/lib
+          LD_LIBRARY_PATH: ${{ github.workspace }}/appdir/usr/lib:${{ env.QT_ROOT_DIR }}/lib
         run: |
           cp editor/install/LdapEditorApp.png appdir/usr/share/icons/hicolor/32x32/apps/
           ./linuxdeploy \
@@ -156,67 +156,3 @@ jobs:
             LdapEditorApp-linux-x86_64.AppImage
             *.deb
 
-  # ── Windows ────────────────────────────────────────────────────────────────
-  build-windows:
-    name: Windows
-    runs-on: windows-latest
-
-    defaults:
-      run:
-        shell: msys2 {0}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up MSYS2 / MinGW-w64
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: true
-          install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-qt6-base
-            mingw-w64-x86_64-qt6-tools
-            mingw-w64-x86_64-qt6-5compat
-            mingw-w64-x86_64-openldap
-            mingw-w64-x86_64-openssl
-
-      - name: Generate ICO icon
-        run: |
-          PNG="editor/images/LdapEditorApp.png"
-          ICO="editor/install/LdapEditorApp.ico"
-          convert "$PNG" -define icon:auto-resize="256,128,64,48,32,16" "$ICO" \
-            || cp "$PNG" "$ICO"
-
-      - name: Configure
-        run: |
-          cmake -B build \
-            -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH=/mingw64
-
-      - name: Build
-        run: cmake --build build --parallel
-
-      - name: Deploy Qt DLLs
-        run: |
-          windeployqt6 --release "build/editor/LdapEditorApp.exe"
-
-      - name: Create ZIP archive
-        run: |
-          cd build/editor
-          7z a ../../LdapEditorApp-windows-x64.zip .
-
-      - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: LdapEditorApp-windows-zip
-          path: LdapEditorApp-windows-x64.zip
-
-      - name: Publish release assets
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: LdapEditorApp-windows-x64.zip

@@ -8,7 +8,6 @@
 #include <system_error>
 #include <iostream>
 
-#ifndef _WIN32
 #include <signal.h>
 #include <unistd.h>
 
@@ -80,14 +79,11 @@ static void setupSignalHandlers()
 		std::cerr << ec << std::endl;
 	}
 }
-#endif // _WIN32
 
 
 int main(int argc, char* argv[])
 {
-#ifndef _WIN32
 	setupSignalHandlers();
-#endif
 
 	QApplication a(argc, argv);
 
