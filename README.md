@@ -1,53 +1,123 @@
 # QLdapEditor
-LDAP Editor based on Qt and ldapc++ wrapper
+
+LDAP Editor based on Qt6 and the ldapc++ wrapper.
+
 ![Screenshot](screenshot.png)
 
+## Installation
+
+### macOS
+
+**Homebrew (recommended)**
+
+```sh
+brew tap Shcherbich/QLdapEditor https://github.com/Shcherbich/QLdapEditor
+brew install --cask ldapeditorapp
+```
+
+**Direct download**
+
+Download `LdapEditorApp-macos.dmg` from the [latest release](https://github.com/Shcherbich/QLdapEditor/releases/latest), open it, and drag `LdapEditorApp.app` to your Applications folder.
+
+### Linux
+
+**AppImage**
+
+```sh
+wget https://github.com/Shcherbich/QLdapEditor/releases/latest/download/LdapEditorApp-linux-x86_64.AppImage
+chmod +x LdapEditorApp-linux-x86_64.AppImage
+./LdapEditorApp-linux-x86_64.AppImage
+```
+
+**DEB package (Debian/Ubuntu)**
+
+```sh
+wget https://github.com/Shcherbich/QLdapEditor/releases/latest/download/ldapeditor-<version>.x86_64.deb
+sudo apt install ./ldapeditor-<version>.x86_64.deb
+```
+
+### Windows
+
+Download `LdapEditorApp-windows-x64.zip` from the [latest release](https://github.com/Shcherbich/QLdapEditor/releases/latest), extract it, and run `LdapEditorApp.exe`.
+
+---
+
+## Building from source
+
+### Requirements
+
+- CMake 3.16+
+- Qt 6.5+ with `Qt5Compat` module
+- OpenLDAP development headers
+- OpenSSL development headers
+
+### macOS
+
+```sh
+brew install qt openldap openssl
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"
+cmake --build build --parallel
+```
+
+### Linux (Debian/Ubuntu)
+
+```sh
+sudo apt install libldap-dev libssl-dev libsasl2-dev \
+  libgl1-mesa-dev libxcb-cursor0 libxkbcommon-x11-0
+# Install Qt6 via https://github.com/jurplel/install-qt-action or your distro packages
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+```
+
+### Windows (MSYS2 / MinGW-w64)
+
+```sh
+pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja \
+          mingw-w64-x86_64-qt6-base mingw-w64-x86_64-qt6-tools \
+          mingw-w64-x86_64-qt6-5compat mingw-w64-x86_64-openldap \
+          mingw-w64-x86_64-openssl
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/mingw64
+cmake --build build --parallel
+```
+
+---
+
 ## Feature list
+
 ### Connection to LDAP server
-* Connect to LDAP server using different settings
-  * Anonymous connection
-  * Simple authenticated connection
-  * TLS authenticated connection 
-* Show list of previous successful connections
-* Save last used successful connection settings
-* load last used succesful connection settings on start
-* Reconnect to server
-### Browse and edit LDAP tree entities
-* Add entity to LDAP tree
-* Edit entity in LDAP tree
-* Delete entity in LDAP tree 
-* Refresh LDAP entities tree
-* Save/Reject done changes on LDAP server
-* Load LDAP tree iteratively by expand tree item action
-### Browse anf edit LDAP attributes list
-* Add attribute
-* Delete attribute
-* Use different colors for show May/Must attributes
-* Use icon for show editable data
-* Filter and sort data in attributes list
+- Connect using Anonymous, Simple, or TLS authentication
+- Show list of previous successful connections
+- Save and reload last-used connection settings
+- Reconnect to server
+
+### Browse and edit LDAP tree
+- Add, edit, and delete entries in the LDAP tree
+- Refresh the LDAP tree
+- Save or reject changes on the server
+- Load the tree iteratively on expand
+
+### Browse and edit LDAP attributes
+- Add and delete attributes
+- Colour-coded May/Must attribute display
+- Icon indicator for editable data
+- Filter and sort the attributes list
+
 ### Search LDAP data
-* Setup base DN for search
-* Setup entity filter for search
-* Setup list of attributes to be return
-### Manage LDAP User and Group 
-* Create user entity
-* Change password for user by administrator
-* Manage members list (add/remove) in groups
-* Lock/Inlock user's account on LDAP server with indication by icon
-### Setup package
-* Support of RPM setup package for CentOS7
-* Add application into 'Utilities' Main menu's group (Gnome/KDE) after installation 
- 
+- Set base DN for search
+- Configure entry filter and attribute list to return
 
+### Manage users and groups
+- Create user entries
+- Change user password (as administrator)
+- Add/remove members in groups
+- Lock/unlock user accounts with visual indicator
 
-## Prepare development environment for CentOS7
-- $sudo yum -y install epel-release
-- $sudo yum -y install cmake3
-- $sudo yum -y install qt5-qtbase-devel
-- $sudo yum -y install openldap-devel.x86_64
-- $sudo yum -y install openssl-devel
-- $wget http://download.qt.io/archive/qt/5.9/5.9.2/qt-opensource-linux-x64-5.8.2.run
-- $chmod a+x ./qt-opensource-linux-x64-5.8.2.run
-- $./qt-opensource-linux-x64-5.8.2.run
+### Packaging
+- macOS `.app` bundle and DMG
+- Linux AppImage and DEB package
+- Windows ZIP archive
+- XDG desktop integration (Linux)
+
+---
 
 [Fortress LDAP Schema and Config](https://github.com/apache/directory-fortress-core/tree/master/ldap) for reference.

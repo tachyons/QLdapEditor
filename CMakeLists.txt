@@ -101,7 +101,8 @@ else()
         "/usr/share" "/usr/share/applications" "/usr/share/desktop-directories"
         "/usr/share/icons" "/usr/share/icons/hicolor" "/usr/share/icons/hicolor/32x32"
         "/usr/share/icons/hicolor/32x32/apps"
-        "/opt" "/etc" "/etc/xdg" "/etc/xdg/menus" "/etc/xdg/menus/applications-merged"
+        "/usr/share/xdg" "/usr/share/xdg/menus" "/usr/share/xdg/menus/applications-merged"
+        "/opt"
     )
 endif()
 

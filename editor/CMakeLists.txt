@@ -186,13 +186,13 @@ elseif(WIN32)
         WIN32_EXECUTABLE TRUE
     )
 
-    find_program(WINDEPLOYQT_EXEC windeployqt
+    find_program(WINDEPLOYQT_EXEC NAMES windeployqt6 windeployqt
         HINTS "${Qt6_DIR}/../../../bin"
     )
     if(WINDEPLOYQT_EXEC)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND "${WINDEPLOYQT_EXEC}"
-                --no-compiler-runtime
+                --release
                 "$<TARGET_FILE:${PROJECT_NAME}>"
             COMMENT "Running windeployqt"
         )
@@ -223,13 +223,12 @@ else()
         RUNTIME DESTINATION bin
     )
 
-    set(LDAP_EDITOR_DESKTOP_DIR     "/usr/share/applications")
-    set(LDAP_EDITOR_PIXMAPS_DIR     "/usr/share/icons/hicolor/32x32/apps")
-    set(LDAP_EDITOR_DIRECTORY_DIR   "/usr/share/desktop-directories")
-    set(LDAP_EDITOR_MENU_MERGED_DIR "/etc/xdg/menus/applications-merged")
-
-    install(FILES install/LdapEditorApp.png       DESTINATION "${LDAP_EDITOR_PIXMAPS_DIR}")
-    install(FILES install/LdapEditorApp.desktop   DESTINATION "${LDAP_EDITOR_DESKTOP_DIR}")
-    install(FILES install/LdapEditorApp.menu      DESTINATION "${LDAP_EDITOR_MENU_MERGED_DIR}")
-    install(FILES install/LdapEditorApp.directory DESTINATION "${LDAP_EDITOR_DIRECTORY_DIR}")
+    install(FILES install/LdapEditorApp.png
+        DESTINATION "share/icons/hicolor/32x32/apps")
+    install(FILES install/LdapEditorApp.desktop
+        DESTINATION "share/applications")
+    install(FILES install/LdapEditorApp.menu
+        DESTINATION "share/xdg/menus/applications-merged")
+    install(FILES install/LdapEditorApp.directory
+        DESTINATION "share/desktop-directories")
 endif()

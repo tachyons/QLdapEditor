@@ -64,6 +64,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          name: "LDAP Editor ${{ github.ref_name }}"
+          generate_release_notes: true
           files: LdapEditorApp-macos.dmg
 
   # ── Linux ──────────────────────────────────────────────────────────────────
@@ -158,75 +160,52 @@ jobs:
     name: Windows
     runs-on: windows-latest
 
+    defaults:
+      run:
+        shell: msys2 {0}
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
+      - name: Set up MSYS2 / MinGW-w64
+        uses: msys2/setup-msys2@v2
         with:
-          version: ${{ env.QT_VERSION }}
-          arch: win64_msvc2022_64
-          modules: qt5compat
-          cache: true
-
-      - name: Set up MSVC
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Install OpenLDAP and OpenSSL via vcpkg
-        run: vcpkg install openldap:x64-windows openssl:x64-windows
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-tools
+            mingw-w64-x86_64-qt6-5compat
+            mingw-w64-x86_64-openldap
+            mingw-w64-x86_64-openssl
 
       - name: Generate ICO icon
-        shell: pwsh
         run: |
-          # Use .NET to convert PNG to ICO
-          Add-Type -AssemblyName System.Drawing
-          $png  = [System.Drawing.Image]::FromFile("$PWD\editor\images\LdapEditorApp.png")
-          $ico  = "$PWD\editor\install\LdapEditorApp.ico"
-          $ms   = New-Object System.IO.MemoryStream
-          foreach ($sz in @(16, 32, 48, 64, 128, 256)) {
-              $bmp = New-Object System.Drawing.Bitmap($png, $sz, $sz)
-              $bmp.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png)
-          }
-          # Simple ICO writer (single 32x32 frame)
-          $bmp32 = New-Object System.Drawing.Bitmap($png, 32, 32)
-          $tmpPng = [System.IO.Path]::GetTempFileName() + ".png"
-          $bmp32.Save($tmpPng)
-          # Use magick if available, otherwise copy PNG as placeholder
-          if (Get-Command magick -ErrorAction SilentlyContinue) {
-              magick convert $tmpPng -define icon:auto-resize="256,128,64,48,32,16" $ico
-          } else {
-              Copy-Item $tmpPng $ico
-          }
+          PNG="editor/images/LdapEditorApp.png"
+          ICO="editor/install/LdapEditorApp.ico"
+          convert "$PNG" -define icon:auto-resize="256,128,64,48,32,16" "$ICO" \
+            || cp "$PNG" "$ICO"
 
       - name: Configure
-        shell: pwsh
         run: |
-          cmake -B build `
-            -G "Visual Studio 17 2022" -A x64 `
-            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH=/mingw64
 
       - name: Build
-        run: cmake --build build --config Release --parallel
+        run: cmake --build build --parallel
 
       - name: Deploy Qt DLLs
-        shell: pwsh
         run: |
-          $exe = "build\editor\Release\LdapEditorApp.exe"
-          & "$env:Qt6_DIR\bin\windeployqt.exe" --release --no-compiler-runtime $exe
-
-      - name: Package with CPack (NSIS)
-        shell: pwsh
-        run: |
-          cd build
-          cpack -C Release -G NSIS
-        continue-on-error: true
+          windeployqt6 --release "build/editor/LdapEditorApp.exe"
 
       - name: Create ZIP archive
-        shell: pwsh
         run: |
-          $dir = "build\editor\Release"
-          Compress-Archive -Path "$dir\*" -DestinationPath "LdapEditorApp-windows-x64.zip"
+          cd build/editor
+          7z a ../../LdapEditorApp-windows-x64.zip .
 
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
@@ -234,17 +213,8 @@ jobs:
           name: LdapEditorApp-windows-zip
           path: LdapEditorApp-windows-x64.zip
 
-      - name: Upload NSIS installer artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: LdapEditorApp-windows-installer
-          path: build/*.exe
-        continue-on-error: true
-
       - name: Publish release assets
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            LdapEditorApp-windows-x64.zip
-            build/*.exe
+          files: LdapEditorApp-windows-x64.zip
