@@ -117,6 +117,7 @@ jobs:
         env:
           QMAKE: ${{ env.Qt6_DIR }}/bin/qmake
           OUTPUT: LdapEditorApp-linux-x86_64.AppImage
+          LD_LIBRARY_PATH: ${{ github.workspace }}/appdir/usr/lib
         run: |
           cp editor/install/LdapEditorApp.png appdir/usr/share/icons/hicolor/32x32/apps/
           ./linuxdeploy \
@@ -173,6 +174,7 @@ jobs:
           msystem: MINGW64
           update: true
           install: >-
+            mingw-w64-x86_64-gcc
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
             mingw-w64-x86_64-qt6-base
