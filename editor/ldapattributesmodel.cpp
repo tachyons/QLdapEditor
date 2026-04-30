@@ -22,9 +22,9 @@ bool CLdapAttributesProxyModel::filterAcceptsRow(int sourceRow,  const QModelInd
   QModelIndex indexAttr = sourceModel()->index(sourceRow, static_cast<int>(ldapeditor::AttributeColumn::Attribute), sourceParent);
   QModelIndex indexValue = sourceModel()->index(sourceRow, static_cast<int>(ldapeditor::AttributeColumn::Value), sourceParent);
 
-  if(!filterRegExp().isEmpty())
-        return sourceModel()->data(indexAttr).toString().contains(filterRegExp()) ||
-               sourceModel()->data(indexValue).toString().contains(filterRegExp()) ;
+  if(!filterRegularExpression().pattern().isEmpty())
+        return sourceModel()->data(indexAttr).toString().contains(filterRegularExpression()) ||
+               sourceModel()->data(indexValue).toString().contains(filterRegularExpression()) ;
 
   return true;
 }

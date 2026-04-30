@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmake --version)",
+      "Read(//usr/local/**)",
+      "Read(//opt/homebrew/opt/**)",
+      "Bash(brew list *)",
+      "Bash(pkg-config --libs ldap)",
+      "Read(//opt/homebrew/Cellar/openldap/2.6.9/lib/**)",
+      "Read(//opt/homebrew/Cellar/openldap/2.6.9/include/**)",
+      "Bash(brew info *)",
+      "Bash(cmake *)",
+      "Bash(identify /Users/tachyons/code/QLdapEditor/editor/images/LdapEditorApp.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/tachyons/code/QLdapEditor/editor/images/LdapEditorApp.png)"
+    ]
+  }
+}

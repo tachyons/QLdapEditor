@@ -31,6 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QDateTime>
 #include <QCryptographicHash>
 #include <QDataStream>
+#include <QIODevice>
+#include <cstdlib>
 
 SimpleCrypt::SimpleCrypt():
     m_key(0),
@@ -38,7 +40,7 @@ SimpleCrypt::SimpleCrypt():
     m_protectionMode(ProtectionChecksum),
     m_lastError(ErrorNoError)
 {
-    qsrand(uint(QDateTime::currentMSecsSinceEpoch() & 0xFFFF));
+    std::srand(uint(QDateTime::currentMSecsSinceEpoch() & 0xFFFF));
 }
 
 SimpleCrypt::SimpleCrypt(quint64 key):
@@ -47,7 +49,7 @@ SimpleCrypt::SimpleCrypt(quint64 key):
     m_protectionMode(ProtectionChecksum),
     m_lastError(ErrorNoError)
 {
-    qsrand(uint(QDateTime::currentMSecsSinceEpoch() & 0xFFFF));
+    std::srand(uint(QDateTime::currentMSecsSinceEpoch() & 0xFFFF));
     splitKey();
 }
 
@@ -103,7 +105,7 @@ QByteArray SimpleCrypt::encryptToByteArray(QByteArray plaintext)
     if (m_protectionMode == ProtectionChecksum) {
         flags |= CryptoFlagChecksum;
         QDataStream s(&integrityProtection, QIODevice::WriteOnly);
-        s << qChecksum(ba.constData(), ba.length());
+        s << qChecksum(QByteArrayView(ba));
     } else if (m_protectionMode == ProtectionHash) {
         flags |= CryptoFlagHash;
         QCryptographicHash hash(QCryptographicHash::Sha1);
@@ -113,7 +115,7 @@ QByteArray SimpleCrypt::encryptToByteArray(QByteArray plaintext)
     }
 
     //prepend a random char to the string
-    char randomChar = char(qrand() & 0xFF);
+    char randomChar = char(std::rand() & 0xFF);
     ba = randomChar + integrityProtection + ba;
 
     int pos(0);
@@ -225,7 +227,7 @@ QByteArray SimpleCrypt::decryptToByteArray(QByteArray cypher)
             s >> storedChecksum;
         }
         ba = ba.mid(2);
-        quint16 checksum = qChecksum(ba.constData(), ba.length());
+        quint16 checksum = qChecksum(QByteArrayView(ba));
         integrityOk = (checksum == storedChecksum);
     } else if (flags.testFlag(CryptoFlagHash)) {
         if (ba.length() < 20) {

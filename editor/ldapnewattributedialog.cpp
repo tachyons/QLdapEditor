@@ -9,6 +9,8 @@ File contains  implementations for dialog 'Add Attribute' class
 #include "ui_ldapnewattributedialog.h"
 #include "attributemodelhelper.h"
 #include <QDateTime>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 #include "utilities.h"
 
 namespace ldapeditor
@@ -73,7 +75,7 @@ void CLdapNewAttributeDialog::onCurrentClassChanged(int index)
         m_attributes = m_LdapData.schema().attributeByClasses(classes, a2v);
         ui->attrCombo->clear();
 
-        qSort(m_attributes.begin(), m_attributes.end(), [](const ldapcore::CLdapAttribute & a1, const ldapcore::CLdapAttribute & a2)
+        std::sort(m_attributes.begin(), m_attributes.end(), [](const ldapcore::CLdapAttribute & a1, const ldapcore::CLdapAttribute & a2)
         {
             return a1.name().toLower() < a2.name().toLower();
         });
@@ -122,22 +124,22 @@ void CLdapNewAttributeDialog::onCurrentAttributeChanged(int index)
         if (value.isEmpty() && type == ldapcore::AttrType::Boolean)
         {
             value = "FALSE";
-            QRegExp rx("TRUE|FALSE$");
-            QRegExpValidator v(rx, 0);
+            QRegularExpression rx("TRUE|FALSE$");
+            QRegularExpressionValidator v(rx, 0);
             ui->valueEdit->setValidator(&v);
         }
         if (value.isEmpty() && type == ldapcore::AttrType::Integer)
         {
             value = "0";
-            QRegExp rx("^\\d+$");
-            QRegExpValidator v(rx, 0);
+            QRegularExpression rx("^\\d+$");
+            QRegularExpressionValidator v(rx, 0);
             ui->valueEdit->setValidator(&v);
         }
         if (value.isEmpty() && type == ldapcore::AttrType::GeneralizedTime)
         {
             value = QDateTime::currentDateTime().toString("yyyyMMddHHmmss.zzz") + "Z";
-            QRegExp rx("^\\d{4}\\d{2}\\d{2}([0-9]|0[0-9]|1[0-9]|2[0-3])[0-5][0-9][0-5][0-9](\\.\\d{3})?$");
-            QRegExpValidator v(rx, 0);
+            QRegularExpression rx("^\\d{4}\\d{2}\\d{2}([0-9]|0[0-9]|1[0-9]|2[0-3])[0-5][0-9][0-5][0-9](\\.\\d{3})?$");
+            QRegularExpressionValidator v(rx, 0);
             ui->valueEdit->setValidator(&v);
         }
         ui->valueEdit->setText(value);

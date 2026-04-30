@@ -1,29 +1,20 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0)
 PROJECT(LdapEditorApp)
 
-# Find includes in corresponding build directories
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Instruct CMake to run moc automatically when needed
 SET(CMAKE_AUTOMOC ON)
-
-# Create code from a list of Qt designer ui files
 SET(CMAKE_AUTOUIC ON)
-
-# Instruct CMake to run rcc automatically when needed
 SET(CMAKE_AUTORCC ON)
 
-# Find the QtWidgets library
-FIND_PACKAGE(Qt5Widgets CONFIG REQUIRED)
+FIND_PACKAGE(Qt6Widgets CONFIG REQUIRED)
+FIND_PACKAGE(Qt6Core5Compat CONFIG REQUIRED)
 
-#include(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 include_directories(../common)
 include_directories(../corelib)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
-# Populate a CMake variable with the sources
 SET(ldapeditor_SOURCES
     utilities.cpp
     changepassworddialog.cpp
@@ -52,7 +43,6 @@ SET(ldapeditor_SOURCES
     ../common/common.cpp
 )
 
-
 SET(ldapeditor_HEADERS
     utilities.h
     changepassworddialog.h
@@ -72,52 +62,174 @@ SET(ldapeditor_HEADERS
     mainwindow.h
     ldapeditordefines.h
     ../common/common.h
-#    ${CMAKE_BINARY_DIR}/version.h
 )
 
-SET(ldapeditor_OTHER
-    install/LdapEditorApp.desktop
-    install/LdapEditorApp.directory
-    install/LdapEditorApp.menu
+# ── macOS: generate ICNS icon and configure bundle ───────────────────────────
+
+if(APPLE)
+    set(ICON_PNG "${CMAKE_CURRENT_SOURCE_DIR}/images/LdapEditorApp.png")
+    set(ICONSET_DIR "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.iconset")
+    set(ICON_ICNS "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.icns")
+
+    add_custom_command(
+        OUTPUT "${ICON_ICNS}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${ICONSET_DIR}"
+        COMMAND sips -z 16  16  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_16x16.png"
+        COMMAND sips -z 32  32  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_16x16@2x.png"
+        COMMAND sips -z 32  32  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_32x32.png"
+        COMMAND sips -z 64  64  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_32x32@2x.png"
+        COMMAND sips -z 128 128 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_128x128.png"
+        COMMAND sips -z 256 256 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_128x128@2x.png"
+        COMMAND sips -z 256 256 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_256x256.png"
+        COMMAND sips -z 512 512 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_256x256@2x.png"
+        COMMAND sips -z 512 512 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_512x512.png"
+        COMMAND iconutil -c icns "${ICONSET_DIR}" -o "${ICON_ICNS}"
+        DEPENDS "${ICON_PNG}"
+        COMMENT "Generating macOS application icon (ICNS)"
+    )
+    set_source_files_properties("${ICON_ICNS}" PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources"
+        GENERATED TRUE
+    )
+    list(APPEND ldapeditor_SOURCES "${ICON_ICNS}")
+
+# ── Windows: configure version resource and icon ─────────────────────────────
+
+elseif(WIN32)
+    set(ICON_ICO "${CMAKE_CURRENT_SOURCE_DIR}/install/LdapEditorApp.ico")
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/install/LdapEditorApp.rc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.rc"
+        @ONLY
+    )
+    list(APPEND ldapeditor_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.rc")
+
+# ── Linux: include XDG desktop files as project sources (IDE visibility) ─────
+
+else()
+    list(APPEND ldapeditor_SOURCES
+        install/LdapEditorApp.desktop
+        install/LdapEditorApp.directory
+        install/LdapEditorApp.menu
+    )
+endif()
+
+# ── Executable ───────────────────────────────────────────────────────────────
+
+ADD_EXECUTABLE(${PROJECT_NAME}
+    WIN32
+    MACOSX_BUNDLE
+    ${ldapeditor_SOURCES}
+    ${ldapeditor_HEADERS}
 )
 
-# Tell CMake to create the helloworld executable
-ADD_EXECUTABLE(${PROJECT_NAME} ${ldapeditor_SOURCES} ${ldapeditor_HEADERS} ${ldapeditor_OTHER})
+# ── Link libraries ───────────────────────────────────────────────────────────
 
-
-target_link_libraries(${PROJECT_NAME} LdapEditorCore)
-set_target_properties(${PROJECT_NAME} PROPERTIES
-                      INSTALL_RPATH /usr/local/lib
-                      INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-
-# Copy the ldap-editor pixmap
-SET(LDAP_EDITOR_DESKTOP_DIR     "/usr/share/applications")
-SET(LDAP_EDITOR_PIXMAPS_DIR     "/usr/share/icons")
-SET(LDAP_EDITOR_DIRECTORY_DIR   "/usr/share/desktop-directories")
-SET(LDAP_EDITOR_MENU_MERGED_DIR "/etc/xdg/menus/applications-merged")
-
-INSTALL(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
+target_link_libraries(${PROJECT_NAME}
+    LdapEditorCore
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Core5Compat
 )
-INSTALL (FILES install/LdapEditorApp.png DESTINATION ${LDAP_EDITOR_PIXMAPS_DIR})
-INSTALL (FILES install/LdapEditorApp.desktop DESTINATION ${LDAP_EDITOR_DESKTOP_DIR})
-INSTALL (FILES install/LdapEditorApp.menu DESTINATION ${LDAP_EDITOR_MENU_MERGED_DIR})
-INSTALL (FILES install/LdapEditorApp.directory DESTINATION ${LDAP_EDITOR_DIRECTORY_DIR})
 
-# try to set up the menu system
-#find_program(XDG-MIME_EXECUTABLE xdg-mime)
-#FIND_PROGRAM(XDG-DESKTOP-MENU_EXECUTABLE xdg-desktop-menu)
+# ── macOS bundle properties and deployment ───────────────────────────────────
 
-#INSTALL(CODE "
-#  EXECUTE_PROCESS(COMMAND ${XDG-DESKTOP-MENU_EXECUTABLE} install --novendor ${LDAP_EDITOR_DESKTOP_DIR}/ldapeditor.desktop)
-#  "
-#)
+if(APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        MACOSX_BUNDLE                TRUE
+        MACOSX_BUNDLE_INFO_PLIST     "${CMAKE_CURRENT_SOURCE_DIR}/install/Info.plist.in"
+        MACOSX_BUNDLE_ICON_FILE      "LdapEditorApp.icns"
+        MACOSX_BUNDLE_BUNDLE_NAME    "${PRODUCT}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.ldapeditor.app"
+        MACOSX_BUNDLE_COPYRIGHT      "Copyright 2024 ${COMPANY}"
+        INSTALL_RPATH                "@executable_path/../Frameworks"
+        INSTALL_RPATH_USE_LINK_PATH  TRUE
+    )
 
-# Set used Qt5 modules
-QT5_USE_MODULES(${PROJECT_NAME} Core Gui Widgets)
-set(CPACK_CREATE_DESKTOP_LINKS  ${PROJECT_NAME} )
+    # Copy LdapEditorCore dylib into the bundle Frameworks directory
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Frameworks"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:LdapEditorCore>"
+            "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Frameworks/"
+        COMMENT "Bundling LdapEditorCore"
+    )
 
+    # Run macdeployqt to embed Qt frameworks
+    find_program(MACDEPLOYQT_EXEC macdeployqt
+        HINTS "${Qt6_DIR}/../../../bin"
+    )
+    if(MACDEPLOYQT_EXEC)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${MACDEPLOYQT_EXEC}"
+                "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
+                -always-overwrite
+            COMMENT "Running macdeployqt"
+        )
+    else()
+        message(WARNING "macdeployqt not found — Qt frameworks will not be bundled")
+    endif()
 
+    install(TARGETS ${PROJECT_NAME}
+        BUNDLE  DESTINATION .
+        RUNTIME DESTINATION bin
+    )
 
+# ── Windows: GUI executable properties and deployment ────────────────────────
 
+elseif(WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
+    )
+
+    find_program(WINDEPLOYQT_EXEC windeployqt
+        HINTS "${Qt6_DIR}/../../../bin"
+    )
+    if(WINDEPLOYQT_EXEC)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${WINDEPLOYQT_EXEC}"
+                --no-compiler-runtime
+                "$<TARGET_FILE:${PROJECT_NAME}>"
+            COMMENT "Running windeployqt"
+        )
+    else()
+        message(WARNING "windeployqt not found — Qt DLLs will not be deployed")
+    endif()
+
+    install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+    )
+    # Install all DLLs that windeployqt placed next to the executable
+    install(DIRECTORY "$<TARGET_FILE_DIR:${PROJECT_NAME}>/"
+        DESTINATION bin
+        FILES_MATCHING
+            PATTERN "*.dll"
+            PATTERN "*.pdb" EXCLUDE
+    )
+
+# ── Linux: install and XDG desktop integration ───────────────────────────────
+
+else()
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        INSTALL_RPATH             "${CMAKE_INSTALL_PREFIX}/lib"
+        INSTALL_RPATH_USE_LINK_PATH TRUE
+    )
+
+    install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+    )
+
+    set(LDAP_EDITOR_DESKTOP_DIR     "/usr/share/applications")
+    set(LDAP_EDITOR_PIXMAPS_DIR     "/usr/share/icons/hicolor/32x32/apps")
+    set(LDAP_EDITOR_DIRECTORY_DIR   "/usr/share/desktop-directories")
+    set(LDAP_EDITOR_MENU_MERGED_DIR "/etc/xdg/menus/applications-merged")
+
+    install(FILES install/LdapEditorApp.png       DESTINATION "${LDAP_EDITOR_PIXMAPS_DIR}")
+    install(FILES install/LdapEditorApp.desktop   DESTINATION "${LDAP_EDITOR_DESKTOP_DIR}")
+    install(FILES install/LdapEditorApp.menu      DESTINATION "${LDAP_EDITOR_MENU_MERGED_DIR}")
+    install(FILES install/LdapEditorApp.directory DESTINATION "${LDAP_EDITOR_DIRECTORY_DIR}")
+endif()

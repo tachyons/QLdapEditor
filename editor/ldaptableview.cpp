@@ -270,7 +270,7 @@ namespace ldapeditor
             {
                 this->m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
                 this->m_proxyModel->setFilterRole(Qt::DisplayRole);
-                this->m_proxyModel->setFilterRegExp(text);
+                this->m_proxyModel->setFilterRegularExpression(text);
             }
         });
 

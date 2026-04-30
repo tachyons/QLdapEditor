@@ -15,8 +15,9 @@ File contains  implementation for attributes editor delegates
 #include <QComboBox>
 #include <QDateTimeEdit>
 
-#include <QRegExpValidator>
-#include <QRegExp>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+#include <QRegularExpressionMatch>
 
 
 namespace ldapeditor
@@ -48,14 +49,14 @@ QWidget* CLdapDataEditDelegate::createEditor(QWidget *parent, const QStyleOption
             case ldapcore::AttrType::TelephoneNumber:
             {
                 QLineEdit* e  = new QLineEdit(parent);
-                e->setValidator(new QRegExpValidator(QRegExp("[\\d'\\(\\)+-\\.,/:\\? ]+")));
+                e->setValidator(new QRegularExpressionValidator(QRegularExpression("[\\d'\\(\\)+-\\.,/:\\? ]+")));
                 editor = e;
             }
             break;
             case ldapcore::AttrType::Binary:
             {
                 QLineEdit* e  = new QLineEdit(parent);
-                e->setValidator(new QRegExpValidator(QRegExp("([0-9A-F]{2} ?)+")));
+                e->setValidator(new QRegularExpressionValidator(QRegularExpression("([0-9A-F]{2} ?)+")));
                 editor = e;
             }
             break;
@@ -155,15 +156,19 @@ CLdapDataEditDelegate::GeneralizedTimeFormatInfo CLdapDataEditDelegate::formatDa
     }
     else
     {
-        QRegExp rxTimeZoneWest("(\\d{14}\\.\\d{3})(\\d{3})?\\+(\\d{2})(\\d{2})");
-        QRegExp rxTimeZoneEast("(\\d{14}\\.\\d{3})(\\d{3})?-(\\d{2})(\\d{2})");
-        QRegExp rxTimeUTC("(\\d{14})(\\.\\d{1,6})?Z");
-        QRegExp rxTimeLocal("(\\d{12})(\\d{2})?(\\.\\d{1,6})?");
-        if(rxTimeZoneWest.exactMatch(strDateTime))
+        QRegularExpression rxTimeZoneWest("^(\\d{14}\\.\\d{3})(\\d{3})?\\+(\\d{2})(\\d{2})$");
+        QRegularExpression rxTimeZoneEast("^(\\d{14}\\.\\d{3})(\\d{3})?-(\\d{2})(\\d{2})$");
+        QRegularExpression rxTimeUTC("^(\\d{14})(\\.\\d{1,6})?Z$");
+        QRegularExpression rxTimeLocal("^(\\d{12})(\\d{2})?(\\.\\d{1,6})?$");
+        QRegularExpressionMatch mWest = rxTimeZoneWest.match(strDateTime);
+        QRegularExpressionMatch mEast = rxTimeZoneEast.match(strDateTime);
+        QRegularExpressionMatch mUTC = rxTimeUTC.match(strDateTime);
+        QRegularExpressionMatch mLocal = rxTimeLocal.match(strDateTime);
+        if(mWest.hasMatch())
         {
-             QString dt = rxTimeZoneWest.cap(1);
-             QString hh = rxTimeZoneWest.cap(3);
-             QString mm = rxTimeZoneWest.cap(4);
+             QString dt = mWest.captured(1);
+             QString hh = mWest.captured(3);
+             QString mm = mWest.captured(4);
 
              formatInfo.format = GeneralizedTimeFormat::formatTimeZoneWest;
              formatInfo.editFormat =  "yyyyMMddHHmmss.zzz";
@@ -172,11 +177,11 @@ CLdapDataEditDelegate::GeneralizedTimeFormatInfo CLdapDataEditDelegate::formatDa
              int offsetUTC = hh.toInt()*60*60 + mm.toInt()*60;
              formatInfo.dateTime.setOffsetFromUtc(offsetUTC);
         }
-        else if(rxTimeZoneEast.exactMatch(strDateTime))
+        else if(mEast.hasMatch())
         {
-            QString dt = rxTimeZoneEast.cap(1);
-            QString hh = rxTimeZoneEast.cap(3);
-            QString mm = rxTimeZoneEast.cap(4);
+            QString dt = mEast.captured(1);
+            QString hh = mEast.captured(3);
+            QString mm = mEast.captured(4);
 
             formatInfo.format = GeneralizedTimeFormat::formatTimeZoneEast;
             formatInfo.editFormat = "yyyyMMddHHmmss.zzz";
@@ -185,10 +190,10 @@ CLdapDataEditDelegate::GeneralizedTimeFormatInfo CLdapDataEditDelegate::formatDa
             int offsetUTC = hh.toInt()*60*60 + mm.toInt()*60;
             formatInfo.dateTime.setOffsetFromUtc(-offsetUTC);
         }
-        else if(rxTimeUTC.exactMatch(strDateTime))
+        else if(mUTC.hasMatch())
         {
-            QString dt = rxTimeUTC.cap(1);
-            QString ff = rxTimeUTC.cap(2).left(4);
+            QString dt = mUTC.captured(1);
+            QString ff = mUTC.captured(2).left(4);
             if(ff.length() < 4)
                 ff += QString(4-ff.length(), '0');
             dt += ff.isEmpty() ?".000" : ff;
@@ -200,11 +205,11 @@ CLdapDataEditDelegate::GeneralizedTimeFormatInfo CLdapDataEditDelegate::formatDa
             int offsetUTC = 0;
             formatInfo.dateTime.setOffsetFromUtc(offsetUTC);
         }
-        else if(rxTimeLocal.exactMatch(strDateTime))
+        else if(mLocal.hasMatch())
         {
-            QString dt = rxTimeLocal.cap(1);
-            QString ss = rxTimeLocal.cap(2);
-            QString ff = rxTimeLocal.cap(3);
+            QString dt = mLocal.captured(1);
+            QString ss = mLocal.captured(2);
+            QString ff = mLocal.captured(3);
 
             formatInfo.format = GeneralizedTimeFormat::formatTimeZoneLocal;
             formatInfo.editFormat = "yyyyMMddHHmm";

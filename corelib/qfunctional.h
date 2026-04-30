@@ -2,8 +2,6 @@
 #define qfunctional
 
 #include <QThreadPool>
-#include <thread>
-#include <future>
 #include <functional>
 #include <utility>
 

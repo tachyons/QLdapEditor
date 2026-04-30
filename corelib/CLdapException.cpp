@@ -8,7 +8,7 @@ CLdapNameMissedException::CLdapNameMissedException(char const* lpText)
 {
 }
 
-char const* CLdapNameMissedException::what() const _GLIBCXX_USE_NOEXCEPT
+char const* CLdapNameMissedException::what() const noexcept
 {
 	return m_what.c_str();
 }
@@ -19,7 +19,7 @@ CLdapMatchRuleException::CLdapMatchRuleException(char const* lpText)
 {
 }
 
-char const* CLdapMatchRuleException::what() const _GLIBCXX_USE_NOEXCEPT
+char const* CLdapMatchRuleException::what() const noexcept
 {
 	return m_what.c_str();
 }
@@ -30,7 +30,7 @@ CLdapServerException::CLdapServerException(char const* lpText)
 {
 }
 
-char const* CLdapServerException::what() const _GLIBCXX_USE_NOEXCEPT
+char const* CLdapServerException::what() const noexcept
 {
     return m_what.c_str();
 }

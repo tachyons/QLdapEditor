@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 project(LdapEditorCore)
 
@@ -10,12 +10,20 @@ include_directories(/usr/include)
 include_directories(../common)
 include_directories(../3rd_party/openldap/contrib/ldapcpp/src)
 
+if (APPLE)
+    include_directories(/opt/homebrew/opt/openldap/include)
+    include_directories(/opt/homebrew/opt/openssl/include)
+    link_directories(/opt/homebrew/opt/openldap/lib)
+    link_directories(/opt/homebrew/opt/openssl/lib)
+endif()
+
 add_compile_options(-DLDAPEDITORCORE_SO)
 add_compile_options(-DLDAPEDITORCORE_SO_EXPORTS)
 
 
-FIND_PACKAGE(Qt5Core CONFIG REQUIRED)
-FIND_PACKAGE(Qt5Widgets CONFIG REQUIRED)
+FIND_PACKAGE(Qt6Core CONFIG REQUIRED)
+FIND_PACKAGE(Qt6Widgets CONFIG REQUIRED)
+FIND_PACKAGE(Qt6Core5Compat CONFIG REQUIRED)
 
 set(LdapCore_SRCS
     datatypes.h
@@ -48,13 +56,15 @@ file(GLOB OpenLDAPCpp_SRCS
 )
 
 
-FIND_LIBRARY(LDAP_LIBRARY NAMES ldap PATHS /usr/lib64)
+FIND_LIBRARY(LDAP_LIBRARY NAMES ldap PATHS /opt/homebrew/opt/openldap/lib /usr/lib64)
+FIND_LIBRARY(LBER_LIBRARY NAMES lber PATHS /opt/homebrew/opt/openldap/lib /usr/lib64)
+FIND_LIBRARY(SSL_LIBRARY NAMES ssl PATHS /opt/homebrew/opt/openssl/lib /usr/lib64)
+FIND_LIBRARY(CRYPTO_LIBRARY NAMES crypto PATHS /opt/homebrew/opt/openssl/lib /usr/lib64)
 
 
 add_library(${PROJECT_NAME} SHARED ${LdapCore_SRCS} ${OpenLDAPCpp_SRCS})
 
-qt5_use_modules(${PROJECT_NAME} Core Gui Widgets)
-target_link_libraries(${PROJECT_NAME} ${LDAP_LIBRARY} )
+target_link_libraries(${PROJECT_NAME} Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Core5Compat ${LDAP_LIBRARY} ${LBER_LIBRARY} ${SSL_LIBRARY} ${CRYPTO_LIBRARY})
 
 
 INSTALL(TARGETS ${PROJECT_NAME}

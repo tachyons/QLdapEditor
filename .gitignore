@@ -1,5 +1,102 @@
+# ── Build directories ─────────────────────────────────────────────────────────
+build/
+build-*/
+out/
+cmake-build-*/
 
-\.DS_Store
-\doxygen
-
+# ── CMake ─────────────────────────────────────────────────────────────────────
+CMakeCache.txt
+CMakeFiles/
 CMakeLists.txt.user
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+_deps/
+
+# ── Generated files ───────────────────────────────────────────────────────────
+*.icns
+*.iconset/
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.autogen/
+
+# ── Compiled binaries ─────────────────────────────────────────────────────────
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.app/
+
+# ── CPack / packaging output ──────────────────────────────────────────────────
+*.deb
+*.rpm
+*.dmg
+*.pkg
+*.nsis
+*.msi
+*.zip
+_CPack_Packages/
+CPackConfig.cmake
+CPackSourceConfig.cmake
+
+# ── Qt Creator ────────────────────────────────────────────────────────────────
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.creator.user
+
+# ── CLion / JetBrains ────────────────────────────────────────────────────────
+.idea/
+*.iml
+
+# ── Visual Studio ─────────────────────────────────────────────────────────────
+.vs/
+*.vcxproj.user
+*.VC.db
+*.VC.opendb
+*.sln.docstates
+x64/
+x86/
+Release/
+Debug/
+
+# ── Xcode ─────────────────────────────────────────────────────────────────────
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ── Windows ───────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── Linux ─────────────────────────────────────────────────────────────────────
+*~
+.directory
+
+# ── Doxygen ───────────────────────────────────────────────────────────────────
+doxygen/
+html/
+latex/
+
+# ── Logs and temp ─────────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo

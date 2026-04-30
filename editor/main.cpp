@@ -4,11 +4,13 @@
 #include "CLdapData.h"
 #include <QApplication>
 #include <QSettings>
-#include <signal.h>
-#include <unistd.h>
 #include <cerrno>
 #include <system_error>
 #include <iostream>
+
+#ifndef _WIN32
+#include <signal.h>
+#include <unistd.h>
 
 static sigset_t theMask;
 static int count = 0;
@@ -52,7 +54,7 @@ static void signalWrapper(int theSignalNumber, siginfo_t* theSignalDescription, 
 	count++;
 }
 
-void setupSignalHandlers()
+static void setupSignalHandlers()
 {
 	struct ::sigaction sa;
 
@@ -78,11 +80,14 @@ void setupSignalHandlers()
 		std::cerr << ec << std::endl;
 	}
 }
+#endif // _WIN32
 
 
 int main(int argc, char* argv[])
 {
+#ifndef _WIN32
 	setupSignalHandlers();
+#endif
 
 	QApplication a(argc, argv);
 

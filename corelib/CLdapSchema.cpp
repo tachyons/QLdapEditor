@@ -133,7 +133,7 @@ void CLdapSchema::build(LDAPConnection* lc)
 		{
 			rxName2.indexIn(text);
 			listName = rxName2.capturedTexts();
-			names = listName[1].replace("'", "").split(" ", QString::SkipEmptyParts);
+			names = listName[1].replace("'", "").split(" ", Qt::SkipEmptyParts);
 		}
 
 		auto r = FromAttributeString(*itr);

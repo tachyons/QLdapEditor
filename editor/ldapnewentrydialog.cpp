@@ -252,7 +252,7 @@ void CLdapNewEntryDialog::fillListAll(QString structuralClass)
         selected = sup == selected ? "" : sup;
     } while (!selected.isEmpty());
 
-    qSort(v);
+    std::sort(v.begin(), v.end());
     v.erase(std::unique(v.begin(), v.end()), v.end());    
     ui->listAll->clear();
     ui->listNeeded->clear();

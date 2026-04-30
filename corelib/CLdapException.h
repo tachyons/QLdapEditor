@@ -27,7 +27,7 @@ public:
      * \brief Method gets text of exception
      * @return char const* text of exception
      */
-	virtual char const* what() const _GLIBCXX_USE_NOEXCEPT;
+	virtual char const* what() const noexcept;
 
 private:
     std::string m_what;///< text of exception
@@ -54,7 +54,7 @@ public:
      * \brief Method gets text of exception
      * @return char const* text of exception
      */
-    virtual char const* what() const _GLIBCXX_USE_NOEXCEPT;
+    virtual char const* what() const noexcept;
 
 private:
     std::string m_what;///< text of exception
@@ -80,7 +80,7 @@ public:
      * \brief Method gets text of exception
      * @return char const* text of exception
      */
-    virtual char const* what() const _GLIBCXX_USE_NOEXCEPT;
+    virtual char const* what() const noexcept;
 
 private:
     std::string m_what;///< text of exception

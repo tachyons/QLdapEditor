@@ -3,6 +3,8 @@
 #include <string>
 #include <regex>
 #include <tuple>
+#include <QRegExp>
+#include <QRegularExpression>
 #include "CLdapSchema.h"
 #include "datatypesinternal.h"
 
@@ -792,7 +794,7 @@ std::string Check62Integer(std::string value)
 
 std::string CheckNumericString(std::string value)
 {
-    QStringList list = QString(value.c_str()).split(QRegExp("\\s+"), QString::SkipEmptyParts);
+    QStringList list = QString(value.c_str()).split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
     for (auto item : list)
     {
         bool ok;
