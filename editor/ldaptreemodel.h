@@ -165,7 +165,7 @@ namespace ldapeditor
          * \param parent parent index
          * \return true if success, false if else
          */
-        bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+        bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
         /*!
          * \brief Returns true if there is more data available for parent; otherwise returns false.
@@ -185,7 +185,7 @@ namespace ldapeditor
          * \param parent index of  item
          * \return  Returns true if parent has any children; otherwise returns false.
          */
-        bool hasChildren(const QModelIndex &parent) const;
+        bool hasChildren(const QModelIndex &parent) const override;
 
         /*!
          * \brief Inserts count rows into the model before the given row. Items in the new row will be children of the item represented by the parent model index.
@@ -194,7 +194,7 @@ namespace ldapeditor
          * \param parent parent index
          * \return true, if rows inserted, false - if not
          */
-        bool insertRows(int row, int count, const QModelIndex& parent);
+        bool insertRows(int row, int count, const QModelIndex& parent) override;
     protected:
 
 

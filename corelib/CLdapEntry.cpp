@@ -171,7 +171,6 @@ QString CLdapEntry::rDn()
             {
                 rdn = rdn.left(rdn.length() - 1);
             }
-            rdn = rdn;
         }
         m_rDn = rdn.trimmed();
     }

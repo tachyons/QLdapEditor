@@ -147,20 +147,6 @@ if(APPLE)
         COMMENT "Bundling LdapEditorCore"
     )
 
-    # Run macdeployqt to embed Qt frameworks
-    find_program(MACDEPLOYQT_EXEC macdeployqt
-        HINTS "${Qt6_DIR}/../../../bin"
-    )
-    if(MACDEPLOYQT_EXEC)
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND "${MACDEPLOYQT_EXEC}"
-                "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
-                -always-overwrite
-            COMMENT "Running macdeployqt"
-        )
-    else()
-        message(WARNING "macdeployqt not found — Qt frameworks will not be bundled")
-    endif()
 
     install(TARGETS ${PROJECT_NAME}
         BUNDLE  DESTINATION .

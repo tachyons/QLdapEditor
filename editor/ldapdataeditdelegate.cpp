@@ -152,7 +152,7 @@ CLdapDataEditDelegate::GeneralizedTimeFormatInfo CLdapDataEditDelegate::formatDa
         formatInfo.dateTime = QDateTime::currentDateTimeUtc();
 
         int offsetUTC = 0;
-        formatInfo.dateTime.setOffsetFromUtc(offsetUTC);
+        formatInfo.dateTime.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(offsetUTC));
     }
     else
     {
@@ -175,7 +175,7 @@ CLdapDataEditDelegate::GeneralizedTimeFormatInfo CLdapDataEditDelegate::formatDa
              formatInfo.dateTime = QDateTime::fromString(dt, formatInfo.editFormat);
 
              int offsetUTC = hh.toInt()*60*60 + mm.toInt()*60;
-             formatInfo.dateTime.setOffsetFromUtc(offsetUTC);
+             formatInfo.dateTime.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(offsetUTC));
         }
         else if(mEast.hasMatch())
         {
@@ -188,7 +188,7 @@ CLdapDataEditDelegate::GeneralizedTimeFormatInfo CLdapDataEditDelegate::formatDa
             formatInfo.dateTime = QDateTime::fromString(dt, formatInfo.editFormat);
 
             int offsetUTC = hh.toInt()*60*60 + mm.toInt()*60;
-            formatInfo.dateTime.setOffsetFromUtc(-offsetUTC);
+            formatInfo.dateTime.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(-offsetUTC));
         }
         else if(mUTC.hasMatch())
         {
@@ -203,7 +203,7 @@ CLdapDataEditDelegate::GeneralizedTimeFormatInfo CLdapDataEditDelegate::formatDa
             formatInfo.dateTime = QDateTime::fromString(dt, formatInfo.editFormat);
 
             int offsetUTC = 0;
-            formatInfo.dateTime.setOffsetFromUtc(offsetUTC);
+            formatInfo.dateTime.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(offsetUTC));
         }
         else if(mLocal.hasMatch())
         {
@@ -237,12 +237,12 @@ QString CLdapDataEditDelegate::makeDateTimeValue(const GeneralizedTimeFormatInfo
     {
     case GeneralizedTimeFormat::formatTimeZoneWest:
     case GeneralizedTimeFormat::formatTimeZoneEast:
-        dt.setTimeSpec(Qt::OffsetFromUTC);
+        dt.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(dt.offsetFromUtc()));
         strDateTime = dt.toString("yyyyMMddHHmmss.zzz");
         strDateTime += dt.timeZoneAbbreviation().mid(3);
         break;
     case GeneralizedTimeFormat::formatTimeZoneUtc:
-        dt.setTimeSpec(Qt::OffsetFromUTC);
+        dt.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(dt.offsetFromUtc()));
         strDateTime = dt.toString("yyyyMMddHHmmss.zzz");
         strDateTime += dt.timeZoneAbbreviation().mid(3);
         strDateTime +="Z";

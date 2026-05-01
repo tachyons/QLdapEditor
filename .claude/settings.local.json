@@ -11,7 +11,8 @@
       "Bash(brew info *)",
       "Bash(cmake *)",
       "Bash(identify /Users/tachyons/code/QLdapEditor/editor/images/LdapEditorApp.png)",
-      "Bash(sips -g pixelWidth -g pixelHeight /Users/tachyons/code/QLdapEditor/editor/images/LdapEditorApp.png)"
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/tachyons/code/QLdapEditor/editor/images/LdapEditorApp.png)",
+      "Bash(git check-ignore *)"
     ]
   }
 }

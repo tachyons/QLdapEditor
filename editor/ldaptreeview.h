@@ -93,7 +93,7 @@ protected :
      *
      * Draws the branches in the tree view on the same row as the model item index, using the painter given. The branches are drawn in the rectangle specified by rect.
      */
-    virtual void drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const;
+    void drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const override;
 
 public slots:
     /*!

@@ -183,7 +183,7 @@ protected:
          * \param parent parent index
          * \return true, if rows where removed, false - if not
          */
-        bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) ;
+        bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
         /*!
          * \brief Sorts data in model

@@ -300,7 +300,7 @@ void MainWindow::onTreeItemChanged(const QModelIndex& current, const QModelIndex
                     QStringList cls;
                     prevEntry->setClasses(cls);
                     prevEntry->flushAttributesCache();
-                    (void*)prevEntry->attributes();
+                    (void)prevEntry->attributes();
                     m_LdapTree->update(mainPrev);
                 }
 			}
@@ -435,7 +435,7 @@ void MainWindow::onRevertChanges()
             QStringList cls;
             entry->setClasses(cls);
             entry->flushAttributesCache();
-            (void*)entry->attributes();
+            (void)entry->attributes();
             m_LdapTree->update(idx);
             m_LdapTree->setCurrentIndex(idx);
 

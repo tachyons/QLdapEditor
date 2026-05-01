@@ -52,6 +52,7 @@ object_script.*.Debug
 /.qmake.stash
 Makefile*
 *.autogen/
+*_autogen/
 *.icns
 *.iconset/
 
@@ -79,6 +80,9 @@ CPackSourceConfig.cmake
 *.qmlproject.user.*
 *creator.user*
 *.autosave
+
+# ── Claude Code ───────────────────────────────────────────────────────────────
+.claude/settings.local.json
 
 # ── CLion / JetBrains ─────────────────────────────────────────────────────────
 .idea/

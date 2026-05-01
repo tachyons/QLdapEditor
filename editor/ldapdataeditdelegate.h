@@ -103,11 +103,11 @@ protected:
     /*!
       @brief Type of Structure with information about GeneralizedTime format
     */
-    typedef struct {
+    struct GeneralizedTimeFormatInfo {
         GeneralizedTimeFormat format{GeneralizedTimeFormat::formatUnknown}; ///< GeneralizedTimeFormat format
         QDateTime dateTime;       ///< QDateTime value
         QString   editFormat;     ///< Format string for QDateTimeEdit editor
-    } GeneralizedTimeFormatInfo;
+    };
 
     /*!
      * @brief Method detects format of DataTime string and parses datetime value
