@@ -22,7 +22,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options(-Wall -Wextra)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets Core5Compat)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 qt_standard_project_setup()
 set(CMAKE_AUTORCC ON)
 

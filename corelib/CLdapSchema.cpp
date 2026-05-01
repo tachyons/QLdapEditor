@@ -4,7 +4,7 @@
 #include <functional>
 #include <regex>
 #include <tuple>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QDebug>
 #include "CLdapAttribute.h"
 #include "CLdapSchema.h"
@@ -21,9 +21,10 @@ namespace ldapcore
 
 std::tuple<AttrType, std::string> FromAttributeString(std::string attr)
 {
-	static QRegExp re("SYNTAX\\s+'*([0-9a-zA-Z\\.]+)'*");
-	re.indexIn(attr.c_str());
-	QStringList listName = re.capturedTexts();
+    static QRegularExpression re("SYNTAX\\s+'*([0-9a-zA-Z\\.]+)'*");
+    // re.indexIn(attr.c_str());
+    QRegularExpressionMatch match =  re.match(QString::fromStdString(attr));
+    QStringList listName = match.capturedTexts();
 	auto syntax = listName[1].toStdString();
 	if (syntax[2] == '2') // Microsoft specifed
 	{
@@ -111,18 +112,17 @@ void CLdapSchema::build(LDAPConnection* lc)
 	m_impl->attributesSchema.setAttributeTypes(at->getValues());
 	m_impl->classesSchema.setObjectClasses(oc->getValues());
 
-	QRegExp rxName1("NAME\\s+'([^']+)'");
-	QRegExp rxName2("NAME\\s+\\(([^\\)]+)\\)");
-	rxName1.setCaseSensitivity(Qt::CaseInsensitive);
-	rxName2.setCaseSensitivity(Qt::CaseInsensitive);
+    QRegularExpression rxName1("NAME\\s+'([^']+)'",  QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression rxName2("NAME\\s+\\(([^\\)]+)\\)",  QRegularExpression::CaseInsensitiveOption);
+
 
 	const StringList& atValues = m_impl->at->getValues();
 	for (auto itr = atValues.begin(); itr != atValues.end(); ++itr)
 	{
 		QString text(itr->c_str());
 
-		rxName1.indexIn(text);
-		QStringList listName = rxName1.capturedTexts();
+        QRegularExpressionMatch match = rxName1.match(text);
+        QStringList listName = match.capturedTexts();
 		QString name = listName[1];
 		QStringList names;
 		if (!name.isEmpty())
@@ -131,8 +131,8 @@ void CLdapSchema::build(LDAPConnection* lc)
 		}
 		else
 		{
-			rxName2.indexIn(text);
-			listName = rxName2.capturedTexts();
+            QRegularExpressionMatch match = rxName2.match(text);
+            listName = match.capturedTexts();
 			names = listName[1].replace("'", "").split(" ", Qt::SkipEmptyParts);
 		}
 

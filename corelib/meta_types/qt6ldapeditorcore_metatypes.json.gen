@@ -1,0 +1,57 @@
+[
+    {
+        "classes": [
+            {
+                "className": "CLdapData",
+                "lineNumber": 30,
+                "object": true,
+                "qualifiedClassName": "ldapcore::CLdapData",
+                "signals": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "isSucceed",
+                                "type": "bool"
+                            },
+                            {
+                                "name": "errorDescription",
+                                "type": "QString"
+                            }
+                        ],
+                        "index": 0,
+                        "lineNumber": 135,
+                        "name": "onConnectionCompleted",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "CLdapData.h",
+        "outputRevision": 69
+    },
+    {
+        "classes": [
+            {
+                "className": "CLdapEntry",
+                "lineNumber": 40,
+                "object": true,
+                "qualifiedClassName": "ldapcore::CLdapEntry",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "CLdapEntry.h",
+        "outputRevision": 69
+    }
+]
