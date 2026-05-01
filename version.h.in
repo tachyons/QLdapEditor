@@ -1,5 +1,4 @@
-/*CMAKE Generated file, do not edit*/
-
-#define VERSION "@VERSION@"
+/* CMAKE Generated file, do not edit */
+#define VERSION "@PROJECT_VERSION@"
 #define PRODUCT "@PRODUCT@"
 #define COMPANY "@COMPANY@"

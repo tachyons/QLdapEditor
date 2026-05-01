@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-
 project(LdapEditorCore)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-
-include_directories(../common)
-include_directories(../3rd_party/openldap/contrib/ldapcpp/src)
 
 # Locate OpenLDAP headers.
 # First pass: only search explicit hints (NO_DEFAULT_PATH prevents macOS from
@@ -20,9 +12,6 @@ find_path(LDAP_INCLUDE_DIR ldap.h
 if(NOT LDAP_INCLUDE_DIR)
     find_path(LDAP_INCLUDE_DIR ldap.h)
 endif()
-if(LDAP_INCLUDE_DIR)
-    include_directories(BEFORE ${LDAP_INCLUDE_DIR})
-endif()
 
 # Use CMake's portable OpenSSL finder instead of raw FIND_LIBRARY
 if(APPLE)
@@ -31,62 +20,59 @@ if(APPLE)
 endif()
 find_package(OpenSSL REQUIRED)
 
-add_compile_options(-DLDAPEDITORCORE_SO)
-add_compile_options(-DLDAPEDITORCORE_SO_EXPORTS)
-
-
-FIND_PACKAGE(Qt6Core CONFIG REQUIRED)
-FIND_PACKAGE(Qt6Widgets CONFIG REQUIRED)
-FIND_PACKAGE(Qt6Core5Compat CONFIG REQUIRED)
-
-set(LdapCore_SRCS
-    datatypes.h
-    datatypesinternal.h 
-    CLdapException.h
-    CLdapException.cpp
-    CLdapSchema.h
-    CLdapSchema.cpp
-    cldapserver.h
-    cldapserver.cpp
-    CLdapSchemaValidator.cpp
-    qfunctional.h
-    CLdapEntry.h
-    CLdapEntry.cpp
-    CLdapData.h
-    CLdapData.cpp
-    CLdapAttribute.h
-    CLdapAttribute.cpp    
-    ../common/common.cpp
-    ../common/common.h
+find_library(LDAP_LIBRARY NAMES ldap libldap
+    HINTS /opt/homebrew/opt/openldap/lib /usr/lib64
+)
+find_library(LBER_LIBRARY NAMES lber liblber
+    HINTS /opt/homebrew/opt/openldap/lib /usr/lib64
 )
 
-if (APPLE)
-    set(LdapCore_SRCS ${LdapCore_SRCS}  sasl_decode64.cpp)
-endif(APPLE)
+set(LdapCore_SRCS
+    CLdapException.cpp
+    CLdapSchema.cpp
+    cldapserver.cpp
+    CLdapSchemaValidator.cpp
+    CLdapEntry.cpp
+    CLdapData.cpp
+    CLdapAttribute.cpp
+    ../common/common.cpp
+)
+
+if(APPLE)
+    list(APPEND LdapCore_SRCS sasl_decode64.cpp)
+endif()
 
 file(GLOB OpenLDAPCpp_SRCS
     "../3rd_party/openldap/contrib/ldapcpp/src/*.cpp"
     "../3rd_party/openldap/contrib/ldapcpp/src/*.h"
 )
 
+qt_add_library(${PROJECT_NAME} SHARED ${LdapCore_SRCS} ${OpenLDAPCpp_SRCS})
 
-FIND_LIBRARY(LDAP_LIBRARY NAMES ldap libldap
-    HINTS /opt/homebrew/opt/openldap/lib /usr/lib64
-)
-FIND_LIBRARY(LBER_LIBRARY NAMES lber liblber
-    HINTS /opt/homebrew/opt/openldap/lib /usr/lib64
-)
-
-
-add_library(${PROJECT_NAME} SHARED ${LdapCore_SRCS} ${OpenLDAPCpp_SRCS})
-
-target_link_libraries(${PROJECT_NAME}
-    Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Core5Compat
-    ${LDAP_LIBRARY} ${LBER_LIBRARY}
-    OpenSSL::SSL OpenSSL::Crypto
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    LDAPEDITORCORE_SO
+    LDAPEDITORCORE_SO_EXPORTS
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_SOURCE_DIR}/common
+    ${CMAKE_SOURCE_DIR}/3rd_party/openldap/contrib/ldapcpp/src
+    ${LDAP_INCLUDE_DIR}
+)
 
-INSTALL(TARGETS ${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Core5Compat
+    ${LDAP_LIBRARY}
+    ${LBER_LIBRARY}
+    OpenSSL::SSL
+    OpenSSL::Crypto
+)
+
+install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION lib
 )

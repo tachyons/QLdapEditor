@@ -1,81 +1,67 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
-PROJECT(QLdapEditor)
+cmake_minimum_required(VERSION 3.16)
+project(QLdapEditor VERSION 0.5.57 LANGUAGES CXX)
 
-SET(PRODUCT "LDAP Editor")
-SET(PACKAGENAME "ldapeditor")
-SET(COMPANY "Very Big Company Inc.")
+set(PRODUCT     "LDAP Editor")
+set(PACKAGENAME "ldapeditor")
+set(COMPANY     "Very Big Company Inc.")
+set(PACKAGEGROUP "Utilities")
 
-SET(CMAKE_VERSION_MAJOR 0)
-SET(CMAKE_VERSION_MINOR 5)
-SET(CMAKE_VERSION_PATCH 57)
+file(WRITE ${CMAKE_BINARY_DIR}/version.h.in [=[
+/* CMAKE Generated file, do not edit */
+#define VERSION "@PROJECT_VERSION@"
+#define PRODUCT "@PRODUCT@"
+#define COMPANY "@COMPANY@"
+]=])
+configure_file(${CMAKE_BINARY_DIR}/version.h.in ${CMAKE_BINARY_DIR}/version.h @ONLY)
 
-
-SET(VERSION "${CMAKE_VERSION_MAJOR}.${CMAKE_VERSION_MINOR}.${CMAKE_VERSION_PATCH}")
-
-FILE(WRITE ${CMAKE_BINARY_DIR}/version.h.in
-"/*CMAKE Generated file, do not edit*/\n
-\#define VERSION \"@VERSION@\"\n\
-\#define PRODUCT \"@PRODUCT@\"\n\
-\#define COMPANY \"@COMPANY@\"\n\
-"
-)
-configure_file(${CMAKE_BINARY_DIR}/version.h.in ${CMAKE_BINARY_DIR}/version.h)
-
-
-
-SET(APP_DEFAULT_LOCATION_DIR "/usr/local/bin/${PACKAGE_NAME}" )
-SET(SO_DEFAULT_LOCATION_DIR "/usr/local/lib/${PACKAGE_NAME}" )
-SET(PACKAGEGROUP "Utilities")
-
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  SET(CMAKE_INSTALL_PREFIX /usr/local CACHE PATH "Install path prefix, prepended onto install directories."  FORCE)
-ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX /usr/local CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_compile_options(-Wall)
-add_compile_options(-Wextra)
+add_compile_options(-Wall -Wextra)
 
-#include_directories(common)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core5Compat)
+qt_standard_project_setup()
+set(CMAKE_AUTORCC ON)
+
 add_subdirectory(corelib)
 add_subdirectory(editor)
 
-
-#INSTALL (DIRECTORY 3rd_party/openldap/lib/ DESTINATION lib)
-
 # ── CPack — common settings ───────────────────────────────────────────────────
-SET(CPACK_PACKAGE_NAME        ${PACKAGENAME})
-SET(CPACK_PACKAGE_VERSION     ${VERSION})
-SET(CPACK_PACKAGE_RELEASE     1)
-SET(CPACK_PACKAGE_VENDOR      ${COMPANY})
-SET(CPACK_PACKAGE_CONTACT     "Dmitry Markevich <d_markevich@bte.ae>")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PRODUCT} tool for view/edit LDAP directories.")
-SET(CPACK_PACKAGE_EXECUTABLES LdapEditorApp "${PRODUCT}")
+set(CPACK_PACKAGE_NAME        ${PACKAGENAME})
+set(CPACK_PACKAGE_VERSION     ${PROJECT_VERSION})
+set(CPACK_PACKAGE_RELEASE     1)
+set(CPACK_PACKAGE_VENDOR      ${COMPANY})
+set(CPACK_PACKAGE_CONTACT     "Dmitry Markevich <d_markevich@bte.ae>")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PRODUCT} tool for view/edit LDAP directories.")
+set(CPACK_PACKAGE_EXECUTABLES LdapEditorApp "${PRODUCT}")
 
 # ── CPack — macOS (DMG drag-and-drop) ────────────────────────────────────────
 if(APPLE)
-    SET(CPACK_GENERATOR           "DragNDrop")
-    SET(CPACK_DMG_VOLUME_NAME     "${PRODUCT}")
-    SET(CPACK_DMG_FORMAT          "UDZO")
-    SET(CPACK_PACKAGE_FILE_NAME   "${PACKAGENAME}-${VERSION}-macos-${CMAKE_SYSTEM_PROCESSOR}")
-    SET(CPACK_PACKAGE_ICON        "${CMAKE_CURRENT_SOURCE_DIR}/editor/images/LdapEditorApp.png")
+    set(CPACK_GENERATOR         "DragNDrop")
+    set(CPACK_DMG_VOLUME_NAME   "${PRODUCT}")
+    set(CPACK_DMG_FORMAT        "UDZO")
+    set(CPACK_PACKAGE_FILE_NAME "${PACKAGENAME}-${PROJECT_VERSION}-macos-${CMAKE_SYSTEM_PROCESSOR}")
+    set(CPACK_PACKAGE_ICON      "${CMAKE_CURRENT_SOURCE_DIR}/editor/images/LdapEditorApp.png")
 
 # ── CPack — Linux (DEB + RPM) ─────────────────────────────────────────────────
 else()
-    SET(CPACK_GENERATOR           "DEB;RPM")
-    SET(CPACK_PACKAGE_FILE_NAME   "${PACKAGENAME}-${VERSION}-${CPACK_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
-    SET(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-    SET(CPACK_PACKAGE_DEFAULT_LOCATION "bin")
+    set(CPACK_GENERATOR                 "DEB;RPM")
+    set(CPACK_PACKAGE_FILE_NAME         "${PACKAGENAME}-${PROJECT_VERSION}-${CPACK_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
+    set(CPACK_PACKAGING_INSTALL_PREFIX  ${CMAKE_INSTALL_PREFIX})
+    set(CPACK_PACKAGE_DEFAULT_LOCATION  "bin")
 
     # DEB
-    SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT}")
-    SET(CPACK_DEBIAN_PACKAGE_SECTION    "utils")
-    SET(CPACK_DEBIAN_PACKAGE_DEPENDS    "libldap-2.5-0 | libldap-2.4-2, libssl3 | libssl1.1")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT}")
+    set(CPACK_DEBIAN_PACKAGE_SECTION    "utils")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS    "libldap-2.5-0 | libldap-2.4-2, libssl3 | libssl1.1")
 
     # RPM
-    SET(CPACK_RPM_PACKAGE_LICENSE "GPLv2")
-    SET(CPACK_RPM_PACKAGE_GROUP   ${PACKAGEGROUP})
-    LIST(APPEND CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST
+    set(CPACK_RPM_PACKAGE_LICENSE "GPLv2")
+    set(CPACK_RPM_PACKAGE_GROUP   ${PACKAGEGROUP})
+    list(APPEND CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST
         "/usr" "/usr/local" "/usr/local/bin" "/usr/local/lib"
         "/usr/share" "/usr/share/applications" "/usr/share/desktop-directories"
         "/usr/share/icons" "/usr/share/icons/hicolor" "/usr/share/icons/hicolor/32x32"
@@ -85,4 +71,4 @@ else()
     )
 endif()
 
-INCLUDE(CPack)
+include(CPack)

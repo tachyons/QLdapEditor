@@ -132,3 +132,5 @@ latex/
 *.swp
 *.swo
 *.d
+
+.claude/*

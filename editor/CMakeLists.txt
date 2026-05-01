@@ -1,21 +1,39 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
-PROJECT(LdapEditorApp)
+cmake_minimum_required(VERSION 3.16)
+project(LdapEditorApp)
 
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(CMAKE_AUTOMOC ON)
-SET(CMAKE_AUTOUIC ON)
-SET(CMAKE_AUTORCC ON)
+# ── macOS: generate ICNS icon ────────────────────────────────────────────────
 
-FIND_PACKAGE(Qt6Widgets CONFIG REQUIRED)
-FIND_PACKAGE(Qt6Core5Compat CONFIG REQUIRED)
+if(APPLE)
+    set(ICON_PNG    "${CMAKE_CURRENT_SOURCE_DIR}/images/LdapEditorApp.png")
+    set(ICONSET_DIR "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.iconset")
+    set(ICON_ICNS   "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.icns")
 
-ADD_DEFINITIONS(${QT_DEFINITIONS})
+    add_custom_command(
+        OUTPUT "${ICON_ICNS}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${ICONSET_DIR}"
+        COMMAND sips -z 16  16  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_16x16.png"
+        COMMAND sips -z 32  32  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_16x16@2x.png"
+        COMMAND sips -z 32  32  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_32x32.png"
+        COMMAND sips -z 64  64  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_32x32@2x.png"
+        COMMAND sips -z 128 128 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_128x128.png"
+        COMMAND sips -z 256 256 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_128x128@2x.png"
+        COMMAND sips -z 256 256 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_256x256.png"
+        COMMAND sips -z 512 512 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_256x256@2x.png"
+        COMMAND sips -z 512 512 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_512x512.png"
+        COMMAND iconutil -c icns "${ICONSET_DIR}" -o "${ICON_ICNS}"
+        DEPENDS "${ICON_PNG}"
+        COMMENT "Generating macOS application icon (ICNS)"
+    )
+    set_source_files_properties("${ICON_ICNS}" PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources"
+        GENERATED TRUE
+    )
+endif()
 
-include_directories(../common)
-include_directories(../corelib)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+# ── Executable ───────────────────────────────────────────────────────────────
 
-SET(ldapeditor_SOURCES
+qt_add_executable(${PROJECT_NAME}
+    MACOSX_BUNDLE
     utilities.cpp
     changepassworddialog.cpp
     changepassworddialog.ui
@@ -40,80 +58,33 @@ SET(ldapeditor_SOURCES
     ldapnewentrydialog.ui
     mainwindow.cpp
     main.cpp
-    ../common/common.cpp
+    ${CMAKE_SOURCE_DIR}/common/common.cpp
 )
-
-SET(ldapeditor_HEADERS
-    utilities.h
-    changepassworddialog.h
-    addusertogroupdialog.h
-    ldapnewattributedialog.h
-    ldapdataeditdelegate.h
-    attributemodelhelper.h
-    ldapsettings.h
-    simplecrypt.h
-    ldaptreemodel.h
-    ldapattributesmodel.h
-    ldapsearchdialog.h
-    connectiondialog.h
-    ldaptableview.h
-    ldaptreeview.h
-    ldapnewentrydialog.h
-    mainwindow.h
-    ldapeditordefines.h
-    ../common/common.h
-)
-
-# ── macOS: generate ICNS icon and configure bundle ───────────────────────────
 
 if(APPLE)
-    set(ICON_PNG "${CMAKE_CURRENT_SOURCE_DIR}/images/LdapEditorApp.png")
-    set(ICONSET_DIR "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.iconset")
-    set(ICON_ICNS "${CMAKE_CURRENT_BINARY_DIR}/LdapEditorApp.icns")
-
-    add_custom_command(
-        OUTPUT "${ICON_ICNS}"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${ICONSET_DIR}"
-        COMMAND sips -z 16  16  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_16x16.png"
-        COMMAND sips -z 32  32  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_16x16@2x.png"
-        COMMAND sips -z 32  32  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_32x32.png"
-        COMMAND sips -z 64  64  "${ICON_PNG}" --out "${ICONSET_DIR}/icon_32x32@2x.png"
-        COMMAND sips -z 128 128 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_128x128.png"
-        COMMAND sips -z 256 256 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_128x128@2x.png"
-        COMMAND sips -z 256 256 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_256x256.png"
-        COMMAND sips -z 512 512 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_256x256@2x.png"
-        COMMAND sips -z 512 512 "${ICON_PNG}" --out "${ICONSET_DIR}/icon_512x512.png"
-        COMMAND iconutil -c icns "${ICONSET_DIR}" -o "${ICON_ICNS}"
-        DEPENDS "${ICON_PNG}"
-        COMMENT "Generating macOS application icon (ICNS)"
-    )
-    set_source_files_properties("${ICON_ICNS}" PROPERTIES
-        MACOSX_PACKAGE_LOCATION "Resources"
-        GENERATED TRUE
-    )
-    list(APPEND ldapeditor_SOURCES "${ICON_ICNS}")
-
-# ── Linux: include XDG desktop files as project sources (IDE visibility) ─────
-
+    target_sources(${PROJECT_NAME} PRIVATE "${ICON_ICNS}")
 else()
-    list(APPEND ldapeditor_SOURCES
+    # XDG desktop files — added for IDE visibility only, not compiled
+    target_sources(${PROJECT_NAME} PRIVATE
         install/LdapEditorApp.desktop
         install/LdapEditorApp.directory
         install/LdapEditorApp.menu
     )
 endif()
 
-# ── Executable ───────────────────────────────────────────────────────────────
+# ── Include directories ───────────────────────────────────────────────────────
 
-ADD_EXECUTABLE(${PROJECT_NAME}
-    MACOSX_BUNDLE
-    ${ldapeditor_SOURCES}
-    ${ldapeditor_HEADERS}
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_SOURCE_DIR}/common
+    ${CMAKE_SOURCE_DIR}/corelib
+    ${CMAKE_BINARY_DIR}
 )
 
 # ── Link libraries ───────────────────────────────────────────────────────────
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PRIVATE
     LdapEditorCore
     Qt6::Core
     Qt6::Gui
@@ -124,29 +95,39 @@ target_link_libraries(${PROJECT_NAME}
 # ── macOS bundle properties and deployment ───────────────────────────────────
 
 if(APPLE)
+    find_program(MACDEPLOYQT_EXECUTABLE macdeployqt
+        HINTS "${Qt6Core_DIR}/../../../bin"
+        REQUIRED
+    )
+
     set_target_properties(${PROJECT_NAME} PROPERTIES
-        MACOSX_BUNDLE                TRUE
-        MACOSX_BUNDLE_INFO_PLIST     "${CMAKE_CURRENT_SOURCE_DIR}/install/Info.plist.in"
-        MACOSX_BUNDLE_ICON_FILE      "LdapEditorApp.icns"
-        MACOSX_BUNDLE_BUNDLE_NAME    "${PRODUCT}"
-        MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}"
-        MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "com.ldapeditor.app"
-        MACOSX_BUNDLE_COPYRIGHT      "Copyright 2024 ${COMPANY}"
-        INSTALL_RPATH                "@executable_path/../Frameworks"
-        INSTALL_RPATH_USE_LINK_PATH  TRUE
+        MACOSX_BUNDLE                      TRUE
+        MACOSX_BUNDLE_INFO_PLIST           "${CMAKE_CURRENT_SOURCE_DIR}/install/Info.plist.in"
+        MACOSX_BUNDLE_ICON_FILE            "LdapEditorApp.icns"
+        MACOSX_BUNDLE_BUNDLE_NAME          "${PRODUCT}"
+        MACOSX_BUNDLE_BUNDLE_VERSION       "${CMAKE_PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+        MACOSX_BUNDLE_GUI_IDENTIFIER       "com.ldapeditor.app"
+        MACOSX_BUNDLE_COPYRIGHT            "Copyright 2024 ${COMPANY}"
+        INSTALL_RPATH                      "@executable_path/../Frameworks"
+        BUILD_WITH_INSTALL_RPATH           TRUE
+        INSTALL_RPATH_USE_LINK_PATH        FALSE
     )
 
-    # Copy LdapEditorCore dylib into the bundle Frameworks directory
+    # Deploy Qt frameworks, platform plugins, and all linked dependencies
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-            "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Frameworks"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:LdapEditorCore>"
-            "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Frameworks/"
-        COMMENT "Bundling LdapEditorCore"
+        COMMAND ${MACDEPLOYQT_EXECUTABLE}
+            "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
+            -always-overwrite
+        COMMENT "Running macdeployqt"
     )
 
+    # Re-sign after macdeployqt invalidates the previous signature
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND codesign --deep --force --sign -
+            "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
+        COMMENT "Ad-hoc signing app bundle"
+    )
 
     install(TARGETS ${PROJECT_NAME}
         BUNDLE  DESTINATION .
