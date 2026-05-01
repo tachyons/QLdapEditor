@@ -1,11 +1,8 @@
-name: Build and Deploy
+name: Release
 
 on:
   push:
-    branches: [master]
     tags: ["*"]
-  pull_request:
-    branches: [master]
 
 permissions:
   contents: write
@@ -24,8 +21,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: |
-          brew install qt openldap openssl
+        run: brew install qt openldap openssl
 
       - name: Generate ICNS icon
         run: |
@@ -64,7 +60,6 @@ jobs:
           path: LdapEditorApp-macos.dmg
 
       - name: Publish release asset
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           name: "LDAP Editor ${{ github.ref_name }}"
@@ -130,7 +125,6 @@ jobs:
             --icon-file editor/install/LdapEditorApp.png \
             --output appimage
 
-
       - name: Build DEB package
         run: |
           cmake --build build --target package
@@ -150,10 +144,8 @@ jobs:
         continue-on-error: true
 
       - name: Publish release assets
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: |
             LdapEditorApp-linux-x86_64.AppImage
             *.deb
-
